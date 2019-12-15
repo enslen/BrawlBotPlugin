@@ -263,7 +263,7 @@
 	}
 	
 	function checkBrawlers(brawler){
-		brawlers = ["SHELLY","NITA","COLT","BULL","JESSIE","BROCK","DYNAMIKE","BO","TICK","8-BIT","8BIT","EMZ","ELPRIMO","BARLEY","POCO","ROSA","RICO","DARRYL","PENNY","CARL","PIPER","PAM","FRANK","BIBI","MORTIS","TARA","GENE","SPIKE","CROW","LEON","SANDY"];
+		brawlers = ["SHELLY","NITA","COLT","BULL","JESSIE","BROCK","DYNAMIKE","BO","TICK","8-BIT","8BIT","EMZ","ELPRIMO","BARLEY","POCO","ROSA","RICO","DARRYL","PENNY","CARL","PIPER","PAM","FRANK","BIBI","MORTIS","TARA","GENE","SPIKE","CROW","LEON","SANDY","BEA","MAX"];
 		
 		for (i = 0; i < brawlers.length; i++) {
 			if (brawlers[i] == brawler.toUpperCase()) {
@@ -413,7 +413,7 @@
 							clubInfo = " is currently a member of club " + jObj.club.name;
 						}
 						$.say("Player " + jObj.name + clubInfo + " and has " + jObj.brawlersUnlocked.toString() + 
-							" of 30 brawlers with a total of " + jObj.trophies + " trophies. " +
+							" of 32 brawlers with a total of " + jObj.trophies + " trophies. " +
 							"Their highest trophy record is " + jObj.highestTrophies + ". " +
 							"They have a net change of " + (jObj.trophies - lastTrophies).toString() + 
 							" trophies since the last check.");

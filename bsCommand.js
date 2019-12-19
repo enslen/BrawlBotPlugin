@@ -77,7 +77,8 @@
 		var heist = new gameModeLog("heist", "Heist");
 		var bounty = new gameModeLog("bounty", "Bounty");
 		var siege = new gameModeLog("siege", "Siege");
-		var reg = /^(gemGrab|brawlBall|heist|bounty|siege)$/i
+		var presentPlunder = new gameModeLog("presentPlunder", "Present Plunder");
+		var reg = /^(gemGrab|brawlBall|heist|bounty|siege|presentPlunder)$/i
 		var battleLog = [];
 		var battleSummary = [];
 		for (i = 0; i < jObj.items.length; i++) {
@@ -104,6 +105,9 @@
 			if (battleLog[i].mode == "siege") {
 				siege.add(battleLog[i].result);
 			}
+			if (battleLog[i].mode == "presentPlunder") {
+				presentPlunder.add(battleLog[i].result);
+			}
 		}
 		if (gemGrab.total() > 0) {
 			battleSummary.push(gemGrab);
@@ -119,6 +123,9 @@
 		}
 		if (siege.total() > 0) {
 			battleSummary.push(siege);
+		}
+		if (presentPlunder.total() > 0) {
+			battleSummary.push(presentPlunder);
 		}
 		return battleSummary;
 	}
@@ -476,7 +483,7 @@
 				if (r.success) {
 					var modeLog = getBattleLogData(jObj);
 					if (modeLog.length > 0) {
-						var results = ""
+						var results = "";
 						for (i = 0; i < modeLog.length; i++) {
 							results += "(" + (i+1).toString() + ") " + modeLog[i].pMode + " for " + modeLog[i].wld() + 
 								" at " + modeLog[i].winrate();

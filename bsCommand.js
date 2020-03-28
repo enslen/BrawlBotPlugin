@@ -1,33 +1,41 @@
 (function() {
 	var apiKeyPath = "./scripts/custom/bsAPIKey.txt";
-	var apiPlayerStr = "https://api.starlist.pro/v1/player?tag=";
-	var apiBattleLogStr = "https://api.starlist.pro/v1/player/battlelog?tag=";
-	var apiLeaderBoardStr = "https://api.starlist.pro/v1/leaderboards/players?count=200";
+	var brawlerJSON = "./scripts/custom/brawlers.json";
+	var apiPlayerStr = "https://api.brawlstars.com/v1/players/%23";
+	var apiBattleLogStr = "/battlelog";
+	var apiLeaderBoardStr = "https://api.brawlstars.com/v1/rankings/";
 	var bsTableAlias = "brawlStarsPlayers";
 	var bsTableData = "brawlStarsPlayerData";
+	var totalBrawlers = "35";
 	
 	
-	function getBrawlStarsData(playerTag, apiString){
+	function getBrawlStarsData(playerTag, battleLog){
+		var apiString = apiPlayerStr + removeHash(playerTag);
+		if (battleLog) {
+			apiString += apiBattleLogStr;
+		}
 		var apiKey = $.readFile(apiKeyPath);
 		var HttpRequest = Packages.com.gmt2001.HttpRequest;
 		var HashMap = Packages.java.util.HashMap;
 		var h = new HashMap();
-		h.put("Authorization", apiKey[0]);
-		var r = HttpRequest.getData(HttpRequest.RequestType.GET, apiString + removeHash(playerTag), '', h);
+		h.put("authorization", "Bearer " + apiKey[0]);
+		var r = HttpRequest.getData(HttpRequest.RequestType.GET, apiString, '', h);
 		return r;
 	}
 	
-	function getLeaderBoardData(region, brawler, apiString){
+	function getLeaderBoardData(region, brawler){
 		var apiKey = $.readFile(apiKeyPath);
 		var HttpRequest = Packages.com.gmt2001.HttpRequest;
 		var HashMap = Packages.java.util.HashMap;
 		var h = new HashMap();
-		h.put("Authorization", apiKey[0]);
-		var a = apiString + "&region=" + region;
+		h.put("authorization", "Bearer " + apiKey[0]);
+		var apiString = apiLeaderBoardStr + region;
 		if (brawler !== "") {
-			a += ("&brawler=" + encodeURIComponent(brawler));
+			apiString += ("/brawlers/" + brawler);
+		} else {
+			apiString += "/players"
 		}
-		var r = HttpRequest.getData(HttpRequest.RequestType.GET, a, '', h);
+		var r = HttpRequest.getData(HttpRequest.RequestType.GET, apiString, '', h);
 		return r;
 	}
 	
@@ -86,8 +94,9 @@
 		var heist = new gameModeLog("heist", "Heist");
 		var bounty = new gameModeLog("bounty", "Bounty");
 		var siege = new gameModeLog("siege", "Siege");
+		var hotZone = new gameModeLog("hotZone", "Hot Zone");
 		var presentPlunder = new gameModeLog("presentPlunder", "Present Plunder");
-		var reg = /^(gemGrab|brawlBall|heist|bounty|siege|presentPlunder)$/i;
+		var reg = /^(gemGrab|brawlBall|heist|bounty|siege|hotZone|presentPlunder)$/i;
 		var battleLog = [];
 		var battleSummary = [];
 		for (i = 0; i < jObj.items.length; i++) {
@@ -114,6 +123,9 @@
 			if (battleLog[i].mode == "siege") {
 				siege.add(battleLog[i].result);
 			}
+			if (battleLog[i].mode == "hotZone") {
+				hotZone.add(battleLog[i].result);
+			}
 			if (battleLog[i].mode == "presentPlunder") {
 				presentPlunder.add(battleLog[i].result);
 			}
@@ -132,6 +144,9 @@
 		}
 		if (siege.total() > 0) {
 			battleSummary.push(siege);
+		}
+		if (hotZone.total() > 0) {
+			battleSummary.push(hotZone);
 		}
 		if (presentPlunder.total() > 0) {
 			battleSummary.push(presentPlunder);
@@ -157,87 +172,87 @@
 			return sReset;
 		}
 		if (t >= 600 && t <= 649){
-			sReset.trophies = t - 550;
+			sReset.trophies = t - 575;
 			sReset.starPoints = 120;
 			return sReset;
 		}
 		if (t >= 650 && t <= 699){
-			sReset.trophies = t - 575;
+			sReset.trophies = t - 625;
 			sReset.starPoints = 160;
 			return sReset;
 		}
 		if (t >= 700 && t <= 749){
-			sReset.trophies = t - 600;
+			sReset.trophies = t - 650;
 			sReset.starPoints = 200;
 			return sReset;
 		}
 		if (t >= 750 && t <= 799){
-			sReset.trophies = t - 625;
+			sReset.trophies = t - 700;
 			sReset.starPoints = 220;
 			return sReset;
 		}
 		if (t >= 800 && t <= 849){
-			sReset.trophies = t - 650;
+			sReset.trophies = t - 750;
 			sReset.starPoints = 240;
 			return sReset;
 		}
 		if (t >= 850 && t <= 899){
-			sReset.trophies = t - 675;
+			sReset.trophies = t - 775;
 			sReset.starPoints = 260;
 			return sReset;
 		}
 		if (t >= 900 && t <= 949){
-			sReset.trophies = t - 700;
+			sReset.trophies = t - 825;
 			sReset.starPoints = 280;
 			return sReset;
 		}
 		if (t >= 950 && t <= 999){
-			sReset.trophies = t - 725;
+			sReset.trophies = t - 875;
 			sReset.starPoints = 300;
 			return sReset;
 		}
 		if (t >= 1000 && t <= 1049){
-			sReset.trophies = t - 750;
+			sReset.trophies = t - 900;
 			sReset.starPoints = 320;
 			return sReset;
 		}
 		if (t >= 1050 && t <= 1099){
-			sReset.trophies = t - 775;
+			sReset.trophies = t - 925;
 			sReset.starPoints = 340;
 			return sReset;
 		}
 		if (t >= 1100 && t <= 1149){
-			sReset.trophies = t - 800;
+			sReset.trophies = t - 950;
 			sReset.starPoints = 360;
 			return sReset;
 		}
 		if (t >= 1150 && t <= 1199){
-			sReset.trophies = t - 825;
+			sReset.trophies = t - 975;
 			sReset.starPoints = 380;
 			return sReset;
 		}
 		if (t >= 1200 && t <= 1249){
-			sReset.trophies = t - 850;
+			sReset.trophies = t - 1000;
 			sReset.starPoints = 400;
 			return sReset;
 		}
 		if (t >= 1250 && t <= 1299){
-			sReset.trophies = t - 875;
+			sReset.trophies = t - 1025;
 			sReset.starPoints = 420;
 			return sReset;
 		}
 		if (t >= 1300 && t <= 1349){
-			sReset.trophies = t - 900;
+			sReset.trophies = t - 1050;
 			sReset.starPoints = 440;
 			return sReset;
 		}
 		if (t >= 1350 && t <= 1399){
-			sReset.trophies = t - 925;
+			sReset.trophies = t - 1075;
 			sReset.starPoints = 460;
 			return sReset;
 		}
 		if (t >= 1400){
-			sReset.trophies = t - 950;
+			sReset.trophies = t - 1100;
 			sReset.starPoints = 480;
 			return sReset;
 		}
@@ -279,12 +294,12 @@
 		return brawler;
 	}
 	
-	// The list used in this function includes all 32 brawlers and additional shortened values
-	// Only applies to 8-BIT, JESSIE and DYNAMIKE currently
+	// The list used in this function includes all 33 brawlers and additional shortened values
+	// Only applies to 8-BIT, EL PRIMO, JESSIE and DYNAMIKE currently
 	// This function and the formatBrawlerName could be optimized better; I imagine you could do some nifty regexs here
 	// A proper brawlers object would probably be better
 	function checkBrawlers(brawler){
-		brawlers = ["SHELLY","NITA","COLT","BULL","JESSIE","JESS","BROCK","DYNAMIKE","DYNA","MIKE","BO","TICK","8-BIT","8BIT","EMZ","ELPRIMO","PRIMO","BARLEY","POCO","ROSA","RICO","DARRYL","PENNY","CARL","PIPER","PAM","FRANK","BIBI","MORTIS","TARA","GENE","SPIKE","CROW","LEON","SANDY","BEA","MAX"];
+		brawlers = ["SHELLY","NITA","COLT","BULL","JESSIE","JESS","BROCK","DYNAMIKE","DYNA","MIKE","BO","TICK","8-BIT","8BIT","EMZ","ELPRIMO","PRIMO","BARLEY","POCO","ROSA","RICO","DARRYL","PENNY","CARL","PIPER","PAM","FRANK","BIBI","MORTIS","TARA","GENE","SPIKE","CROW","LEON","SANDY","BEA","MAX","MRP","MR.P","JACKY","SPROUT"];
 		
 		for (i = 0; i < brawlers.length; i++) {
 			if (brawlers[i] == brawler.toUpperCase()) {
@@ -308,7 +323,20 @@
 		if (name == "8BIT") {
 			return "8-BIT";
 		}
+		if (name == "MR.P" || name == "MRP") {
+			return "MR. P";
+		}
 		return name;
+	}
+
+	function getBrawlerID(name){
+		var jObj = JSON.parse($.readFile(brawlerJSON));
+		for (i = 0; i < jObj.items.length; i++) {
+			if (name.toUpperCase() == jObj.items[i].name.toUpperCase()) {
+				return jObj.items[i].id;
+			}	
+		}
+		return 0;
 	}
 
 	function sortByRank(a, b){
@@ -406,13 +434,12 @@
 					return;
 				}
 			}
-			var r = getBrawlStarsData(playerTag, apiPlayerStr);
+			var r = getBrawlStarsData(playerTag, false);
 			// Adding try/catch to the JSON parsing for all commands, this probably could be moved under the r.success check and drop the try/catch
-			// This might be safer in the long run though based on past issues with BrawlAPI
 			try {
 				var jObj = JSON.parse(r.content);
 			} catch(err) {
-				$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+				$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 				return;
 			}
 			if (r.success) {
@@ -449,8 +476,8 @@
 					if (jObj.club !== null) {
 						clubInfo = " is currently a member of club " + jObj.club.name;
 					}
-					$.say("Player " + jObj.name + clubInfo + " and has " + jObj.brawlersUnlocked.toString() + 
-						" of 32 brawlers with a total of " + jObj.trophies.toString() + " trophies. " +
+					$.say("Player " + jObj.name + clubInfo + " and has " + jObj.brawlers.length.toString() + 
+						" of " + totalBrawlers + " brawlers with a total of " + jObj.trophies.toString() + " trophies. " +
 						"Their highest trophy record is " + jObj.highestTrophies.toString() + ". " +
 						"They have a net change of " + (jObj.trophies - lastTrophies).toString() + 
 						" trophies since the last check.");
@@ -460,7 +487,7 @@
 				if (jObj.code !== undefined) {
 					$.say("Error: " + jObj.code.toString() + ", Message: " + jObj.message);
 				} else {
-					$.say("Error connecting to BrawlAPI server.");
+					$.say("Error connecting to Brawl Stars API server.");
 				}
 			}
 			return;
@@ -489,11 +516,11 @@
 					return;
 				}
 			}
-			var r = getBrawlStarsData(playerTag, apiPlayerStr);
+			var r = getBrawlStarsData(playerTag, false);
 			try {
 				var jObj = JSON.parse(r.content);
 			} catch(err) {
-				$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+				$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 				return;
 			}
 			if (r.success) {
@@ -502,7 +529,7 @@
 				if (jObj.code !== undefined) {
 					$.say("Error: " + jObj.code.toString() + ", Message: " + jObj.message);
 				} else {
-					$.say("Error connecting to BrawlAPI server.");
+					$.say("Error connecting to Brawl Stars API server.");
 				}
 			}
 			return;
@@ -525,23 +552,23 @@
 					return;
 				}
 			}
-			var r = getBrawlStarsData(playerTag, apiPlayerStr);
+			var r = getBrawlStarsData(playerTag, false);
 			try {
 				var jObj = JSON.parse(r.content);
 			} catch(err) {
-				$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+				$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 				return;
 			}
 			if (r.success) {
-				$.say("Player " + jObj.name + " has " + jObj.victories.toString() + 
-					" 3v3 wins, " + jObj.soloShowdownVictories.toString() + " Solo wins," +
-					" and " + jObj.duoShowdownVictories.toString() + " Duo wins. " +
+				$.say("Player " + jObj.name + " has " + jObj["3vs3Victories"].toString() + 
+					" 3v3 wins, " + jObj.soloVictories.toString() + " Solo wins," +
+					" and " + jObj.duoVictories.toString() + " Duo wins. " +
 					"Their current experience level is: " + jObj.expLevel.toString());
 			} else {
 				if (jObj.code !== undefined) {
 					$.say("Error: " + jObj.code.toString() + ", Message: " + jObj.message);
 				} else {
-					$.say("Error connecting to BrawlAPI server.");
+					$.say("Error connecting to Brawl Stars API server.");
 				}
 			}
 			return;
@@ -565,11 +592,11 @@
 				}
 			}
 			// Will consider querying player data too to get the account name as it appears in BS, for now this is fine
-			var r = getBrawlStarsData(playerTag, apiBattleLogStr);
+			var r = getBrawlStarsData(playerTag, true);
 			try {
 				var jObj = JSON.parse(r.content);
 			} catch(err) {
-				$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+				$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 				return;
 			}
 			if (r.success) {
@@ -591,7 +618,7 @@
 				if (jObj.code !== undefined) {
 					$.say("Error: " + jObj.code.toString() + ", Message: " + jObj.message);
 				} else {
-					$.say("Error connecting to BrawlAPI server.");
+					$.say("Error connecting to Brawl Stars API server.");
 				}
 			}
 			return;
@@ -614,11 +641,11 @@
 					return;
 				}
 			}
-			var r = getBrawlStarsData(playerTag, apiPlayerStr);
+			var r = getBrawlStarsData(playerTag, false);
 			try {
 				var jObj = JSON.parse(r.content);
 			} catch(err) {
-				$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+				$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 				return;
 			}
 			if (r.success) {
@@ -629,7 +656,7 @@
 				if (jObj.code !== undefined) {
 					$.say("Error: " + jObj.code.toString() + ", Message: " + jObj.message);
 				} else {
-					$.say("Error connecting to API server.");
+					$.say("Error connecting to Brawl Stars API server.");
 				}
 			}
 			return;
@@ -646,6 +673,7 @@
 			}
 			var region = "GLOBAL";
 			var brawler = "";
+			var brawlerID = "";
 			var reg = /^(global)$/i;
 			if (arg2 !== undefined) {
 				if (!reg.test(arg2)) {
@@ -660,6 +688,7 @@
 			if (arg3 !== undefined) {
 				if (checkBrawlers(arg3)) {
 					brawler = formatBrawlerName(arg3);
+					brawlerID = getBrawlerID(brawler).toString();
 				} else {
 					$.say("Invalid brawler; check brawler name. Ensure spaces are removed. Ex: El Primo -> ElPrimo");
 					return;
@@ -676,11 +705,11 @@
 				}
 			}
 			// Will consider querying player data too to get the account name as it appears in BS, for now this is fine
-			var r = getLeaderBoardData(region, brawler, apiLeaderBoardStr);
+			var r = getLeaderBoardData(region, brawlerID);
 			try {
 				var jObj = JSON.parse(r.content);
 			} catch(err) {
-				$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+				$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 				return;
 			}
 			if (r.success) {
@@ -704,7 +733,7 @@
 				if (jObj.code !== undefined) {
 					$.say("Error: " + jObj.code.toString() + ", Message: " + jObj.message);
 				} else {
-					$.say("Error connecting to API server.");
+					$.say("Error connecting to Brawl Stars API server.");
 				}
 			}
 			return;
@@ -738,13 +767,13 @@
 					return;
 				}
 			}
-			var r1 = getBrawlStarsData(playerTag1, apiPlayerStr);
-			var r2 = getBrawlStarsData(playerTag2, apiPlayerStr);
+			var r1 = getBrawlStarsData(playerTag1, false);
+			var r2 = getBrawlStarsData(playerTag2, false);
 			try {
 				var jObj1 = JSON.parse(r1.content);
 				var jObj2 = JSON.parse(r2.content);
 			} catch(err) {
-				$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+				$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 				return;
 			}
 			if (r1.success && r2.success) {
@@ -794,7 +823,7 @@
 				if ((jObj1.code !== undefined) || (jObj2.code !== undefined)) {
 					$.say("Error: " + errCode1 + " / " + errCode2 + ", Message: " + errMessage1 + " / " + errMessage2);
 				} else {
-					$.say("Error connecting to API server.");
+					$.say("Error connecting to Brawl Stars API server.");
 				}
 			}
 			return;
@@ -826,7 +855,7 @@
 					$.setIniDbString(bsTableAlias, uAlias, uPlayerTag);
 					return;
 				}
-				var r = getBrawlStarsData(uPlayerTag, apiPlayerStr);
+				var r = getBrawlStarsData(uPlayerTag, false);
 				if (r.success) {
 					$.say("Adding alias \"" + uAlias + "\" to be linked to player tag: " + uPlayerTag);
 					$.setIniDbString(bsTableAlias, uAlias, uPlayerTag);
@@ -835,7 +864,7 @@
 					try {
 						var jObj = JSON.parse(r.content);
 					} catch(err) {
-						$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+						$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 						return;
 					}
 					if (jObj.code !== undefined) {
@@ -876,7 +905,7 @@
 				$.setIniDbString(bsTableAlias, uAlias, uPlayerTag);
 				return;
 			}
-			var r = getBrawlStarsData(uPlayerTag, apiPlayerStr);
+			var r = getBrawlStarsData(uPlayerTag, false);
 			if (r.success) {
 				$.say("Updating alias \"" + uAlias + "\" to be linked to player tag: " + uPlayerTag);
 				$.setIniDbString(bsTableAlias, uAlias, uPlayerTag);
@@ -885,7 +914,7 @@
 				try {
 					var jObj = JSON.parse(r.content);
 				} catch(err) {
-					$.say("Error parsing BrawlAPI data, possible server issue. Error: " + err);
+					$.say("Error parsing Brawl Stars API data, possible server issue. Error: " + err);
 					return;
 				}
 				if (jObj.code !== undefined) {
